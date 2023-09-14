@@ -1,9 +1,11 @@
+package com.slymey;
+
 public class Influence<T>{
     private Influenced<T> influenced;
     private Influence<T> next;
     private Influence<T> previous;
-    private T previousValue; 
-    
+    private T previousValue;
+
     public Influence(Influenced<T> target,T value){
         synchronized(this){
             influenced = target;
@@ -62,7 +64,14 @@ public class Influence<T>{
         public synchronized T get(){return value;}
         public synchronized Influence<T> getInfluence(){return influence;}
         public synchronized void set(T v){value = v;}
-        
+
+        public synchronized void removeInfluences(){
+            Influence inf=influence;
+            while(inf!=null){
+                inf.influenced=null;
+                inf = inf.previous;
+            }
+        }
         public synchronized void setInnitialValue(T innit){
             Influence inf=influence;
             Influence inf2=null;
