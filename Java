@@ -1,5 +1,3 @@
-package com.slymey;
-
 public class Influence<T>{
     private Influenced<T> influenced;
     private Influence<T> next;
