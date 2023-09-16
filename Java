@@ -6,6 +6,7 @@ public class Influence<T>{
 
     public Influence(Influenced<T> target,T value){
         synchronized(this){
+            target.value=value;
             influenced = target;
             previous = target.getInfluence();
             if(previous!=null){
@@ -15,7 +16,7 @@ public class Influence<T>{
             target.influence=this;
         }
     }
-    public Influenced<T> getInflueced(){return influenced;}
+    public Influenced<T> getInfluenced(){return influenced;}
     public T getPreviousValue(){return previousValue;}
     
     public synchronized boolean reset(){
