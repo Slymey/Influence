@@ -1,64 +1,71 @@
-public class Influence<T>{
-    private Influenced<T> influenced;
-    private Influence<T> next;
-    private Influence<T> previous;
-    private T previousValue;
+public class Influences{
+    public class Influence<T>{
+        private Influenced<T> influenced;
+        private Influence<T> next;
+        private Influence<T> previous;
+        private T previousValue;
 
-    public Influence(Influenced<T> target,T value){
-        synchronized(this){
-            target.value=value;
-            influenced = target;
-            previous = target.getInfluence();
-            if(previous!=null){
-                previous.next=this;
+        public Influence(Influenced<T> target,T value){
+            synchronized(this){
+                previousValue = target.value;
+                target.value=value;
+                influenced = target;
+                previous = target.influence;
+                if(previous!=null){
+                    previous.next=this;
+                }
+                target.influence=this;
             }
-            previousValue = target.get();
-            target.influence=this;
         }
-    }
-    public Influenced<T> getInfluenced(){return influenced;}
-    public T getPreviousValue(){return previousValue;}
-    
-    public synchronized boolean reset(){
-        if(influenced==null)return false;
-        if(next==null&&previous==null){
-            influenced.value=previousValue;
-        }else if(next==null&&previous!=null){
-            influenced.value=previousValue;
-            previous.next=null;
-        }else if(next!=null&&previous==null){
-            next.previousValue=previousValue;
-            next.previous=null;
-        }else if(next!=null&&previous!=null){
-            next.previousValue=previousValue;
-            previous.next=next;
-            next.previous=previous;
-        }
-        influenced=null;
-        previous=null;
-        next=null;
-        previousValue = (T) defaultValue(previousValue.getClass()); 
-        return true;
-    }
-    
-    public synchronized boolean reInfluence(Influenced<T> target,T value){
-        boolean b = this.reset();
-        if(!b)return b;
-        synchronized(this){
-            influenced = target;
-            previous = target.getInfluence();
-            if(previous!=null){
-                previous.next=this;
+        public Influenced<T> getInfluenced(){return influenced;}
+        public T getPreviousValue(){return previousValue;}
+
+        public synchronized boolean reset(){
+            if(influenced==null)return false;
+            if(next==null&&previous==null){
+                influenced.value=previousValue;
+                influenced.influence=null;
+            }else if(next==null&&previous!=null){
+                influenced.value=previousValue;
+                influenced.influence=previous;
+                previous.next=null;
+            }else if(next!=null&&previous==null){
+                next.previousValue=previousValue;
+                next.previous=null;
+            }else if(next!=null&&previous!=null){
+                next.previousValue=previousValue;
+                previous.next=next;
+                next.previous=previous;
             }
-            previousValue = target.get();
-            target.influence=this;
+            influenced=null;
+            previous=null;
+            next=null;
+            previousValue = null;
+            return true;
         }
-        return true;
+
+        public synchronized boolean reInfluence(Influenced<T> target,T value){
+            boolean b = this.reset();
+            if(!b)return b;
+            synchronized(this){
+                previousValue = target.value;
+                target.value=value;
+                influenced = target;
+                previous = target.getInfluence();
+                if(previous!=null){
+                    previous.next=this;
+                }
+                target.influence=this;
+            }
+            return true;
+        }
     }
-    
     
     public class Influenced<T>{
-        T value;//you can just refer to value directly or use get/set
+        public T value = null;//you can just refer to value directly or use get/set
+        public Influenced(){}
+        public Influenced(T a){value=a;}
+        
         private Influence<T> influence=null;
         public synchronized T get(){return value;}
         public synchronized Influence<T> getInfluence(){return influence;}
@@ -94,30 +101,9 @@ public class Influence<T>{
             }
             return null;
         }
-    }
-    
-    //used to set a default value for T. 
-    //found on https://stackoverflow.com/a/72963303
-    private static <T> T defaultValue(Class<T> clazz) {
-        if (!clazz.isPrimitive()) {
-            return null;
-        }
-        if (clazz == int.class) {
-            return (T) Integer.valueOf(0);
-        } else if (clazz == long.class) {
-            return (T) Long.valueOf(0);
-        } else if (clazz == float.class) {
-            return (T) Float.valueOf(0);
-        } else if (clazz == double.class) {
-            return (T) Double.valueOf(0);
-        } else if (clazz == char.class) {
-            return (T) Character.valueOf('\0');
-        } else if (clazz == byte.class) {
-            return (T) Byte.valueOf((byte) 0);
-        } else if (clazz == short.class) {
-            return (T) Short.valueOf((short) 0);
-        } else {
-            return (T) Boolean.valueOf(false);
+        @Override
+        public String toString(){
+            return ""+value;
         }
     }
 }
