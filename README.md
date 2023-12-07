@@ -1,5 +1,5 @@
 # Influence
-
+For easily temporarily modifying state of a variable
 
 ## Definitions
 ### Java
