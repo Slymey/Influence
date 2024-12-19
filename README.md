@@ -1,83 +1,66 @@
-# Influence
-For easily temporarily modifying state of a variable
+# Influenced Library
 
-## Definitions
-### Java
-Begin by instantiating the entire class
+A Java library for temporarily modifying the state of a variable using the `Influenced<T>` class.
+
+## Overview
+
+`Influenced<T>` allows you to create a managed variable whose value can be temporarily influenced and reverted using `Influencer<T>` objects. This is useful in scenarios where changes to a variable's state must be controlled and rolled back.
+
+### Key Features:
+- Temporary value modification.
+- Automatic rollback using `Influencer#reset()`.
+- Support for nested influences.
+
+## Installation
+
+To include the `Influenced` library in your project:
+
+1. Clone this repository:
+   ```sh
+   git clone https://github.com/Slymey/Influence.git
+   ```
+2. Add the `Influenced.java` file to your project.
+
+## Usage
+
+### Creating an Influenced Variable
 ```java
-inf = new Influences()
+Influenced<Integer> influencedValue = new Influenced<>(10);
+System.out.println("Initial value: " + influencedValue.get()); // Output: 10
 ```
 
-Then you can instantiate a variable that can be Influenced
+### Applying Influence
 ```java
-inf.new Influenced<T>()
-
-inf.new Influenced<T>(T value)
+Influenced.Influencer<Integer> influencer = influencedValue.influence(20);
+System.out.println("After influence: " + influencedValue.get()); // Output: 20
 ```
 
-After which you can instantiate an Influence on that variable with a new value
+### Resetting Influence
 ```java
-inf.new Influence(Influenced<T> target,T value)
-```
-#### Methods of the Influenced object
-You can refer to the value directly
-```java
-.value
+influencer.reset();
+System.out.println("After reset: " + influencedValue.get()); // Output: 10
 ```
 
-Returns the current value
+### Managing Multiple Influences
 ```java
-get()
+Influenced.Influencer<Integer> inf1 = influencedValue.influence(30);
+Influenced.Influencer<Integer> inf2 = influencedValue.influence(40);
+System.out.println("Latest value: " + influencedValue.get()); // Output: 40
+
+inf2.reset();
+System.out.println("After resetting last influence: " + influencedValue.get()); // Output: 30
 ```
 
-Sets the value immediately. It will be changed when you reset a top most Influence
-```java
-set(T v)
-```
+## Documentation
+For detailed API documentation, refer to the JavaDoc comments within the source code.
 
-Returns most recent Influence on the value
-```java
-getInfluence()
-```
 
-Removes all Influences on the value presurving current state
-```java
-removeInfluences()
-```
+## License
 
-Sets the innitial value that will remain when all Influences are reset
-```java
-setInnitialValue(T innit)
-```
+This project is licensed under the MIT License. See `LICENSE` for more details.
 
-Gets the innitial value that remains when you reset all Influences
-```java
-getInnitialValue()
-```
+---
 
-Returns the current value in string format
-```java
-toString()
-```
+**Author:** Slymey_
 
-#### Methods of the Influence object
-Returns the object it is Influencing
-```java
-getInfluenced()
-```
 
-Returns the previous value before this Influence was applied
-```java
-getPreviousValue()
-```
-
-Resets this Influence by setting the value of the Influenced to the value before this Influence. 
-If it is not the last influence in the chain it propagates the last value. Returns false if Infleunced is null
-```java
-reset()
-```
-
-Repurposes this Influence to Influence another value with the same type
-```java
-reInfluence(Influenced<T> target,T value)
-```
